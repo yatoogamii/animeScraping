@@ -7,7 +7,8 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "puppeteer": "^3.0.2"
+    "puppeteer": "^3.0.2",
+    "puppeteer-autoscroll-down": "^0.1.5"
   },
   "devDependencies": {},
   "keywords": [],
