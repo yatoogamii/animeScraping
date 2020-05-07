@@ -31,42 +31,46 @@ const fs = require("fs");
     });
 
     // get all anime
-    for (const genre of allGenre) {
-      let numberOfPages = Math.ceil(genre.numberOfAnime / 100);
-      const allAnime = [];
+    // for (const genre of allGenre) {
+    let numberOfPages = Math.ceil(allGenre[allGenre.length - 1].numberOfAnime / 100);
+    const allAnime = [];
 
-      while (numberOfPages > 0) {
-        await page.goto(`${genre.url}?page=${numberOfPages}`, { waitUntil: "load" });
+    while (numberOfPages > 0) {
+      await page.goto(`${allGenre[allGenre.length - 1].url}?page=${numberOfPages}`, { waitUntil: "load" });
 
-        await page.setViewport({
-          width: 1200,
-          height: 800,
-        });
+      await page.setViewport({
+        width: 1200,
+        height: 800,
+      });
 
-        // Scroll to the very top of the page
-        await page.evaluate(_ => {
-          window.scrollTo(0, 0);
-        });
+      // Scroll to the very top of the page
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
 
-        // Scroll to the bottom of the page with puppeteer-autoscroll-down
-        await scrollPageToBottom(page);
+      // Scroll to the bottom of the page with puppeteer-autoscroll-down
+      await scrollPageToBottom(page);
 
-        const allAnimeOfPage = await page.$$eval(".seasonal-anime", async elements => {
-          const arr = [];
-          for (const element of elements) {
-            const title = element.querySelector(".link-title").innerHTML;
-            const synopsis = element.querySelector(".synopsis .preline").innerHTML;
-            const img = element.querySelector("img").getAttribute("src");
-            arr.push({ title, synopsis, img });
-          }
-          return arr;
-        });
-        allAnime.push(...allAnimeOfPage);
-        numberOfPages--;
-      }
-
-      await fs.writeFileSync(`./database/${genre.name}.json`, JSON.stringify(allAnime));
+      const allAnimeOfPage = await page.$$eval(".seasonal-anime", async elements => {
+        const arr = [];
+        for (const element of elements) {
+          const title = element.querySelector(".link-title").innerHTML;
+          const synopsis = element.querySelector(".synopsis .preline").innerHTML;
+          const img = element.querySelector("img").getAttribute("src");
+          const source = element.querySelector("span.source").innerHTML;
+          const numberOfEpisode = element.querySelector("div.eps span").innerHTML.split(" ")[0];
+          const studio = element.querySelector("span.producer a")?.innerHTML ?? null;
+          const type = element.querySelector("div.info").innerText;
+          arr.push({ title, synopsis, img, source, numberOfEpisode, studio, type });
+        }
+        return arr;
+      });
+      allAnime.push(...allAnimeOfPage);
+      numberOfPages--;
     }
+
+    await fs.writeFileSync(`./database/${allGenre[allGenre.length - 1].name}.json`, JSON.stringify(allAnime));
+    // }
 
     console.log(allGenre);
 
