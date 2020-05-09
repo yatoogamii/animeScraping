@@ -21,7 +21,7 @@ Anime.init(
       type: Sequelize.STRING,
     },
     numberOfEpisode: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
     },
     studio: {
       type: Sequelize.STRING,

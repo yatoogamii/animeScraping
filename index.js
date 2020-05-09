@@ -2,8 +2,14 @@ const puppeteer = require("puppeteer");
 const scrollPageToBottom = require("puppeteer-autoscroll-down");
 const fs = require("fs");
 
+const { sqlConnection, sqlCreateAnime } = require("./databaseSql/database");
+const { mongoConnection, mongoCreateAnime, mongoClose } = require("./databaseMongo/database");
+
 (async () => {
   try {
+    // await sqlConnection();
+    await mongoConnection();
+
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto("https://myanimelist.net/anime.php", { waitUntil: "load" });
@@ -91,6 +97,9 @@ async function getAllAnime(page, allGenre) {
       numberOfPages--;
     }
 
-    await fs.writeFileSync(`./database/${genre.name}.json`, JSON.stringify(allAnime));
+    allAnime.forEach(async anime => {
+      // await sqlCreateAnime(anime);
+      await mongoCreateAnime(anime);
+    });
   }
 }

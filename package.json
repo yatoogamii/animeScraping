@@ -7,10 +7,13 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "mongoose": "^5.9.13",
+    "pg": "^8.1.0",
+    "pg-hstore": "^2.3.3",
     "puppeteer": "^3.0.2",
-    "puppeteer-autoscroll-down": "^0.1.5"
+    "puppeteer-autoscroll-down": "^0.1.5",
+    "sequelize": "^5.21.7"
   },
-  "devDependencies": {},
   "keywords": [],
   "author": "",
   "license": "ISC"
