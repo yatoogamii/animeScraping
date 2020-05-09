@@ -6,3 +6,5 @@ Scraping MyAnimeList for fill in animes database
 
 - puppeteer
 - nodejs
+- postgresql + sequelize
+- mongodb + mongoose
