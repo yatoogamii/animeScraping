@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "mongoose": "^5.9.13",
+    "p-limit": "^2.3.0",
     "pg": "^8.1.0",
     "pg-hstore": "^2.3.3",
     "puppeteer": "^3.0.2",

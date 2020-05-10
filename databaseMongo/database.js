@@ -5,7 +5,7 @@ mongoose.connect("mongodb://localhost/anime_list", { useNewUrlParser: true, useU
 // Model
 
 const animeSchema = new mongoose.Schema({
-  title: String,
+  title: { type: String, unique: true },
   synopsis: String,
   img: String,
   source: String,

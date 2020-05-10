@@ -10,6 +10,7 @@ Anime.init(
   {
     title: {
       type: Sequelize.STRING,
+      unique: true,
     },
     synopsis: {
       type: Sequelize.TEXT,
