@@ -48,7 +48,7 @@ exports.sqlConnection = async function sqlConnection() {
   try {
     const connection = await sequelize.authenticate();
     await Anime.sync({ force: true });
-    console.log("Connection has been established successfully");
+    console.log("SQL Connection has been established successfully");
   } catch (e) {
     console.error("Unable to connect to the database:", e);
   }
@@ -68,6 +68,15 @@ exports.sqlCreateAnime = async function sqlCreateAnime(animeInfos) {
       numberOfEpisode: animeInfos.numberOfEpisode,
     });
     console.log(response);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+exports.sqlClose = async function sqlClose() {
+  try {
+    const connection = await sequelize.close();
+    console.log("SQL db closed");
   } catch (e) {
     console.log(e);
   }

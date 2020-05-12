@@ -5,7 +5,7 @@ mongoose.connect("mongodb://localhost/anime_list", { useNewUrlParser: true, useU
 // Model
 
 const animeSchema = new mongoose.Schema({
-  title: { type: String, unique: true },
+  title: { type: String, unique: true, dropDups: true },
   synopsis: String,
   img: String,
   source: String,
@@ -20,34 +20,44 @@ const Anime = mongoose.model("Anime", animeSchema);
 
 // Function
 
-exports.mongoConnection = function mongoConnection() {
+exports.mongoConnection = async function mongoConnection() {
   const db = mongoose.connection;
   db.on("error", console.error.bind(console, "connection error:"));
   db.once("open", async () => {
-    console.log("Connection has been established successfully");
-    await db.dropCollection("animes");
+    try {
+      console.log("Mongo Connection has been established successfully");
+    } catch (e) {
+      console.log(e);
+    }
   });
 };
 
 exports.mongoCreateAnime = async function mongoCreateAnime(animeInfos) {
-  const newAnime = new Anime({
-    title: animeInfos.title,
-    synopsis: animeInfos.synopsis,
-    studio: animeInfos.studio,
-    numberOfEpisode: animeInfos.numberOfEpisode,
-    source: animeInfos.source,
-    score: animeInfos.score,
-    genres: animeInfos.genres,
-    img: animeInfos.img,
-    type: animeInfos.type,
-  });
-  newAnime.save(async (err, newAnime) => {
-    if (err) return console.error(err);
+  try {
+    const newAnime = new Anime({
+      title: animeInfos.title,
+      synopsis: animeInfos.synopsis,
+      studio: animeInfos.studio,
+      numberOfEpisode: animeInfos.numberOfEpisode,
+      source: animeInfos.source,
+      score: animeInfos.score,
+      genres: animeInfos.genres,
+      img: animeInfos.img,
+      type: animeInfos.type,
+    });
+    await newAnime.save();
     console.log(`Anime: ${newAnime.title} added successfully`);
-  });
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 exports.mongoClose = async function mongoClose() {
-  const db = mongoose.connection;
-  await db.close();
+  try {
+    const db = mongoose.connection;
+    await db.close();
+    console.log("Mongodb closed");
+  } catch (e) {
+    console.log(e);
+  }
 };

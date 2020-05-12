@@ -1,6 +1,10 @@
+// @TODO dont use genres, use directly all anime https://myanimelist.net/topanime.php
 const puppeteer = require("puppeteer");
 const scrollPageToBottom = require("puppeteer-autoscroll-down");
 const pLimit = require("p-limit");
+
+const { sqlConnection, sqlCreateAnime, sqlClose } = require("./databaseSql/database");
+const { mongoConnection, mongoCreateAnime, mongoClose } = require("./databaseMongo/database");
 
 const getAllUrlOfGenres = async browser => {
   try {
@@ -38,7 +42,6 @@ const getAllUrlOfGenres = async browser => {
 };
 
 const getAnimesFromUrl = async (browser, url) => {
-  // loop into url
   try {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "load" });
@@ -75,12 +78,22 @@ const getAnimesFromUrl = async (browser, url) => {
 
 const scrap = async () => {
   try {
+    // await sqlConnection();
+    await mongoConnection();
+
     const limit = pLimit(10);
     const browser = await puppeteer.launch({ headless: true, defaultViewport: { width: 1200, height: 800 } });
     const genresUrlList = await getAllUrlOfGenres(browser);
     const allInfosOfAllAnimes = await Promise.all(genresUrlList.map(url => limit(() => getAnimesFromUrl(browser, url))));
-
     browser.close();
+
+    for (const anime of allInfosOfAllAnimes.flat()) {
+      // await sqlCreateAnime(anime);
+      await mongoCreateAnime(anime);
+    }
+    // await sqlClose();
+    await mongoClose();
+
     return allInfosOfAllAnimes;
   } catch (e) {
     console.log(e);
@@ -88,8 +101,7 @@ const scrap = async () => {
 };
 
 scrap()
-  .then(value => {
-    console.log(value);
+  .then(allAnime => {
     process.exit(1);
   })
   .catch(err => {
